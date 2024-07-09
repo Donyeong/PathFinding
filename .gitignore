@@ -2,14 +2,14 @@
 #
 # Get latest from https://github.com/github/gitignore/blob/master/Unity.gitignore
 #
-/LightArchemyHDRP/[Ll]ibrary/
-/LightArchemyHDRP/[Tt]emp/
-/LightArchemyHDRP/[Oo]bj/
-/LightArchemyHDRP/[Bb]uild/
-/LightArchemyHDRP/[Bb]uilds/
-/LightArchemyHDRP/[Ll]ogs/
-/LightArchemyHDRP/[Mm]emoryCaptures/
-/LightArchemyHDRP/[Uu]serSettings/
+/PathFinding/[Ll]ibrary/
+/PathFinding/[Tt]emp/
+/PathFinding/[Oo]bj/
+/PathFinding/[Bb]uild/
+/PathFinding/[Bb]uilds/
+/PathFinding/[Ll]ogs/
+/PathFinding/[Mm]emoryCaptures/
+/PathFinding/[Uu]serSettings/
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta
