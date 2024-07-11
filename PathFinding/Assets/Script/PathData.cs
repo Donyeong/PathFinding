@@ -19,5 +19,15 @@ namespace DPathFinder
     {
         public Vector3[] vertices;
         public List<NavPolygon> nav_polys;
+
+        public int GetIndexByPos(Vector3 _pos)
+        {
+            return 0;
+        }
+
+        public int GetIndexByRaycast(Vector3 _begin, Vector3 _direction, float _range)
+        {
+            return 0;
+        }
     }
 }
