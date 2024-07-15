@@ -13,7 +13,7 @@ namespace DPathFinder
         // Start is called before the first frame update
         void Start()
         {
-            nav_mesh = NavMeshBuilder.Build();
+            nav_mesh = NavMeshBuilder.Build(mesh.sharedMesh);
             is_builded = true;
         }
 

@@ -53,8 +53,6 @@ namespace DPathFinder
         public Vector3[] vertices;
         public List<NavPolygon> nav_polys;
 
-
-
         private void AddEdgeToMap(Dictionary<Edge, List<int>> edgeToTriangleMap, Edge edge, int poly_idx)
         {
             if (!edgeToTriangleMap.ContainsKey(edge))
@@ -63,10 +61,10 @@ namespace DPathFinder
             }
             edgeToTriangleMap[edge].Add(poly_idx);
         }
-        public void build(MeshFilter _mf)
+        public void build(Mesh _shared_mesh, Transform _transform)
         {
             //Mesh Build
-            Mesh target_mesh = _mf.sharedMesh;
+            Mesh target_mesh = _shared_mesh;
             vertices = target_mesh.vertices;
             nav_polys = new List<NavPolygon>(target_mesh.triangles.Length / 3);
             Dictionary<Edge, List<int>> edgeToTriangleMap = new Dictionary<Edge, List<int>>();
@@ -93,7 +91,7 @@ namespace DPathFinder
             }
             for (int i = 0; i < vertices.Length; i++)
             {
-                vertices[i] = _mf.transform.TransformPoint(vertices[i]);
+                vertices[i] = _transform.TransformPoint(vertices[i]);
             }
 
             foreach (var kvp in edgeToTriangleMap)
