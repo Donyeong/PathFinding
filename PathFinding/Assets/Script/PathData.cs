@@ -123,7 +123,7 @@ namespace DPathFinder
 
 
 
-        bool RayIntersectsTriangle(Ray ray, Vector3 v0, Vector3 v1, Vector3 v2, out Vector3 hitPoint)
+        public bool RayIntersectsTriangle(Ray ray, Vector3 v0, Vector3 v1, Vector3 v2, out Vector3 hitPoint)
         {
             hitPoint = Vector3.zero;
 

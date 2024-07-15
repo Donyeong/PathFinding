@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace DPathFinder
 {
-	class NavMeshBuilder
+	public class NavMeshBuilder
 	{
-		static NavMesh Build()
+		public static NavMesh Build()
 		{
 			return null;
 		}
