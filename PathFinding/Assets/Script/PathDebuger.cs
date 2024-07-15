@@ -9,11 +9,12 @@ namespace DPathFinder
         public bool is_builded = false;
         public MeshFilter mesh;
         public NavMesh nav_mesh;
+        public PathFinder path_finder;
         //public NavMeshBuilder nav_mesh_builder;
         // Start is called before the first frame update
         void Start()
         {
-            nav_mesh = NavMeshBuilder.Build(mesh.sharedMesh);
+            nav_mesh = NavMeshBuilder.Build(mesh.sharedMesh, mesh.transform);
             is_builded = true;
         }
 

@@ -109,18 +109,6 @@ namespace DPathFinder
             }
         }
 
-        public int GetIndexByPos(Vector3 _pos)
-        {
-            return 0;
-        }
-
-        public int GetIndexByRaycast(Vector3 _begin, Vector3 _direction, float _range)
-        {
-            return 0;
-        }
-
-
-
         public bool RayIntersectsTriangle(Ray ray, Vector3 v0, Vector3 v1, Vector3 v2, out Vector3 hitPoint)
         {
             hitPoint = Vector3.zero;
