@@ -10,6 +10,9 @@ namespace DPathFinder
         public MeshFilter mesh;
         public NavMesh nav_mesh;
         public PathFinder path_finder;
+        public int current = 0;
+
+        public List<Vector3> path = new List<Vector3>();
         //public NavMeshBuilder nav_mesh_builder;
         // Start is called before the first frame update
         void Start()
@@ -47,13 +50,27 @@ namespace DPathFinder
             Vector3 worldHitPoint = transform.TransformPoint(_hit_point);
             Debug.Log("Hit Polygon at: " + _hit_point);
             Debug.Log("Hit Triangle Index: " + _hit_index);
+
+            int prev_curr = current;
+            current = _hit_index;
+            path.Clear();
+            path.Add(nav_mesh.nav_polys[prev_curr].getCentor(nav_mesh));
+            path.Add(nav_mesh.nav_polys[current].getCentor(nav_mesh));
+
+
         }
         private void OnDrawGizmos()
         {
             if (null != mesh)
             {
                 GameObject go = mesh.gameObject;
+                Gizmos.color = Color.white;
                 Gizmos.DrawWireMesh(mesh.sharedMesh, 0, go.transform.position + Vector3.up, go.transform.rotation, go.transform.lossyScale);
+                Gizmos.color = Color.red;
+                for(int i = 0; i < path.Count-1; i++)
+				{
+                    Gizmos.DrawLine(path[i], path[i+1]);
+                }
             }
         }
     }

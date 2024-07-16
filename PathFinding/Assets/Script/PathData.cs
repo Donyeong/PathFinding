@@ -14,6 +14,13 @@ namespace DPathFinder
         public int[] vertex_idx;
         public List<int> link_polygons_idx;
         //public List<NavLinkInfo> link_polygons;
+        public Vector3 getCentor(NavMesh _nav_mesh)
+		{
+            Vector3 p0 = _nav_mesh.vertices[vertex_idx[0]];
+            Vector3 p1 = _nav_mesh.vertices[vertex_idx[1]];
+            Vector3 p2 = _nav_mesh.vertices[vertex_idx[2]];
+            return (p0 + p1 + p2) / 3;
+        }
     }
     public struct Edge
     {
