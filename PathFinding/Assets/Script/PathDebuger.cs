@@ -54,8 +54,12 @@ namespace DPathFinder
             int prev_curr = current;
             current = _hit_index;
             path.Clear();
-            path.Add(nav_mesh.nav_polys[prev_curr].getCentor(nav_mesh));
-            path.Add(nav_mesh.nav_polys[current].getCentor(nav_mesh));
+
+            List<NavAstarNode> astar_path = NavLogicAstar.FindPath(prev_curr, current, nav_mesh);
+            for(int i = 0; i < astar_path.Count; i++)
+            {
+                path.Add(astar_path[i].p);
+            }
 
 
         }
