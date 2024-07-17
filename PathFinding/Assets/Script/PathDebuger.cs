@@ -55,13 +55,32 @@ namespace DPathFinder
             current = _hit_index;
             path.Clear();
 
+            PathFinder pf = new PathFinder();
+            pf.SetNavMesh(nav_mesh);
+
             List<NavAstarNode> astar_path = NavLogicAstar.FindPath(prev_curr, current, nav_mesh);
-            for(int i = 0; i < astar_path.Count; i++)
+            if(astar_path.Count == 0)
             {
-                path.Add(astar_path[i].p);
+                return;
             }
 
+            path.Add(astar_path[0].p);
+            int prev_point = astar_path[0].poly_idx;
+            Vector3 prev_point_pos = astar_path[0].p;
 
+            for (int i = 1; i < astar_path.Count; i++)
+            {
+                if(i == astar_path.Count - 1)
+                {
+                    path.Add(astar_path[i].p);
+                    continue;
+                }
+                bool res = pf.NavRayCheck(prev_point_pos, astar_path[i].p, prev_point, i);
+                if (!res)
+                {
+                    path.Add(astar_path[i-1].p);
+                }
+            }
         }
         private void OnDrawGizmos()
         {
