@@ -204,44 +204,41 @@ namespace DPathFinder
 
 		private bool DoLineSegmentsIntersect(Vector3 p1, Vector3 p2, Vector3 q1, Vector3 q2)
 		{
-			////p1.y = 0;
-			//p2.y = 0;
-			//q1.y = 0;
-			//q2.y = 0;
-			// 두 벡터의 방향 계산
+			// 두 벡터를 계산
 			Vector3 r = p2 - p1;
 			Vector3 s = q2 - q1;
 
-			// 크로스 프로덕트를 사용하여 평행 여부 확인
-			float rCrossS = Vector3.Cross(r, s).z;
-			float qMinusPCrossR = Vector3.Cross(q1 - p1, r).z;
+			// 두 벡터의 외적을 계산
+			Vector3 rCrossS = Vector3.Cross(r, s);
+			Vector3 qMinusPCrossR = Vector3.Cross(q1 - p1, r);
 
-			// 평행하지 않은 경우
-			if (rCrossS != 0)
+			float rCrossSMag = rCrossS.magnitude;
+			float qMinusPCrossRMag = qMinusPCrossR.magnitude;
+
+			// r × s = 0 인 경우, 벡터 r과 s는 평행함
+			if (rCrossSMag == 0)
 			{
-				float t = Vector3.Cross(q1 - p1, s).z / rCrossS;
-				float u = Vector3.Cross(q1 - p1, r).z / rCrossS;
-
-				// t와 u 값이 모두 0과 1 사이에 있으면 교차함
-				if (t >= 0 && t <= 1 && u >= 0 && u <= 1)
+				// q1 - p1과 r가 평행하면 동일선상에 있음
+				if (qMinusPCrossRMag == 0)
 				{
-					return true;
+					// 동일 선상에서 겹치는지 확인
+					float t0 = Vector3.Dot(q1 - p1, r) / Vector3.Dot(r, r);
+					float t1 = t0 + Vector3.Dot(s, r) / Vector3.Dot(r, r);
+
+					return (t0 >= 0 && t0 <= 1) || (t1 >= 0 && t1 <= 1);
 				}
+
+				// 동일선상에 있지 않음
+				return false;
 			}
-			// 평행하고 일치하는 경우
-			else if (qMinusPCrossR == 0)
+			else
 			{
-				// 선분이 겹치는지 확인
-				float t0 = Vector3.Dot(q1 - p1, r) / Vector3.Dot(r, r);
-				float t1 = Vector3.Dot(q2 - p1, r) / Vector3.Dot(r, r);
+				// r × s ≠ 0 인 경우, 교차점이 있는지 확인
+				float t = Vector3.Cross(q1 - p1, s).magnitude / rCrossSMag;
+				float u = Vector3.Cross(q1 - p1, r).magnitude / rCrossSMag;
 
-				if ((t0 >= 0 && t0 <= 1) || (t1 >= 0 && t1 <= 1) || (t0 < 0 && t1 > 1) || (t0 > 1 && t1 < 0))
-				{
-					return true;
-				}
+				return t >= 0 && t <= 1 && u >= 0 && u <= 1;
 			}
-
-			return false;
 		}
 		private bool IsPointInTriangle(Vector3 p, Vector3 v0, Vector3 v1, Vector3 v2)
         {

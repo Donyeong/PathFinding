@@ -85,13 +85,13 @@ namespace DPathFinder
                     path.Add(astar_path[i].p);
                     continue;
                 }
-                bool res = pf.NavRayCheck(prev_point_pos, astar_path[i].p, prev_point, astar_path[i].poly_idx);
+                bool res = pf.NavRayCheck(prev_point_pos, astar_path[i+1].p, prev_point, astar_path[i+1].poly_idx);
                 Debug.Log($"Path Ray Res {res}");
                 if (!res)
                 {
-                    path.Add(astar_path[i-1].p);
-                    prev_point = astar_path[i - 1].poly_idx;
-					prev_point_pos = astar_path[i - 1].p;
+                    path.Add(astar_path[i].p);
+                    prev_point = astar_path[i ].poly_idx;
+					prev_point_pos = astar_path[i].p;
 				}
             }
         }
