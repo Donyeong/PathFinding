@@ -193,7 +193,6 @@ namespace DPathFinder
                     bool is_hit = IsLineIntersectingTriangle(_start_point, _end_point, v0, v1, v2);
                     if (is_hit)
                     {
-                        Debug.Log($"Ray Test enqueue {link_poly_idx}");
                         queue.Enqueue(link_poly);
                         close_nodes.Add(link_poly_idx);
                     }
@@ -203,34 +202,48 @@ namespace DPathFinder
             return false;
         }
 
-        private bool DoLineSegmentsIntersect(Vector3 p1, Vector3 p2, Vector3 q1, Vector3 q2)
-        {
-            float orientation(Vector3 a, Vector3 b, Vector3 c)
-            {
-                return (b.x - a.x) * (c.z - a.z) - (b.z - a.z) * (c.x - a.x);
-            }
+		private bool DoLineSegmentsIntersect(Vector3 p1, Vector3 p2, Vector3 q1, Vector3 q2)
+		{
+			////p1.y = 0;
+			//p2.y = 0;
+			//q1.y = 0;
+			//q2.y = 0;
+			// 두 벡터의 방향 계산
+			Vector3 r = p2 - p1;
+			Vector3 s = q2 - q1;
 
-            bool onSegment(Vector3 a, Vector3 b, Vector3 c)
-            {
-                return Mathf.Min(a.x, b.x) <= c.x && c.x <= Mathf.Max(a.x, b.x) &&
-                       Mathf.Min(a.z, b.z) <= c.z && c.z <= Mathf.Max(a.z, b.z);
-            }
+			// 크로스 프로덕트를 사용하여 평행 여부 확인
+			float rCrossS = Vector3.Cross(r, s).z;
+			float qMinusPCrossR = Vector3.Cross(q1 - p1, r).z;
 
-            float o1 = orientation(p1, p2, q1);
-            float o2 = orientation(p1, p2, q2);
-            float o3 = orientation(q1, q2, p1);
-            float o4 = orientation(q1, q2, p2);
+			// 평행하지 않은 경우
+			if (rCrossS != 0)
+			{
+				float t = Vector3.Cross(q1 - p1, s).z / rCrossS;
+				float u = Vector3.Cross(q1 - p1, r).z / rCrossS;
 
-            if (o1 != o2 && o3 != o4) return true;
+				// t와 u 값이 모두 0과 1 사이에 있으면 교차함
+				if (t >= 0 && t <= 1 && u >= 0 && u <= 1)
+				{
+					return true;
+				}
+			}
+			// 평행하고 일치하는 경우
+			else if (qMinusPCrossR == 0)
+			{
+				// 선분이 겹치는지 확인
+				float t0 = Vector3.Dot(q1 - p1, r) / Vector3.Dot(r, r);
+				float t1 = Vector3.Dot(q2 - p1, r) / Vector3.Dot(r, r);
 
-            if (o1 == 0 && onSegment(p1, p2, q1)) return true;
-            if (o2 == 0 && onSegment(p1, p2, q2)) return true;
-            if (o3 == 0 && onSegment(q1, q2, p1)) return true;
-            if (o4 == 0 && onSegment(q1, q2, p2)) return true;
+				if ((t0 >= 0 && t0 <= 1) || (t1 >= 0 && t1 <= 1) || (t0 < 0 && t1 > 1) || (t0 > 1 && t1 < 0))
+				{
+					return true;
+				}
+			}
 
-            return false;
-        }
-        private bool IsPointInTriangle(Vector3 p, Vector3 v0, Vector3 v1, Vector3 v2)
+			return false;
+		}
+		private bool IsPointInTriangle(Vector3 p, Vector3 v0, Vector3 v1, Vector3 v2)
         {
             float sign(Vector3 p1, Vector3 p2, Vector3 p3)
             {
@@ -251,8 +264,8 @@ namespace DPathFinder
             if (DoLineSegmentsIntersect(p1, p2, v1, v2)) return true;
             if (DoLineSegmentsIntersect(p1, p2, v2, v0)) return true;
 
-            if (IsPointInTriangle(p1, v0, v1, v2)) return true;
-            if (IsPointInTriangle(p2, v0, v1, v2)) return true;
+            //if (IsPointInTriangle(p1, v0, v1, v2)) return true;
+            //if (IsPointInTriangle(p2, v0, v1, v2)) return true;
 
             return false;
         }

@@ -12,7 +12,9 @@ namespace DPathFinder
         public PathFinder path_finder;
         public int current = 0;
 
-        public List<Vector3> path = new List<Vector3>();
+
+		public List<Vector3> path_o = new List<Vector3>();
+		public List<Vector3> path = new List<Vector3>();
         //public NavMeshBuilder nav_mesh_builder;
         // Start is called before the first frame update
         void Start()
@@ -54,8 +56,9 @@ namespace DPathFinder
             int prev_curr = current;
             current = _hit_index;
             path.Clear();
+            path_o.Clear();
 
-            PathFinder pf = new PathFinder();
+			PathFinder pf = new PathFinder();
             pf.SetNavMesh(nav_mesh);
 
             List<NavAstarNode> astar_path = NavLogicAstar.FindPath(prev_curr, current, nav_mesh);
@@ -63,6 +66,11 @@ namespace DPathFinder
             {
                 return;
             }
+
+            for(int i = 0; i < astar_path.Count; i++)
+            {
+                path_o.Add(astar_path[i].p);
+			}
 
             path.Add(astar_path[0].p);
             int prev_point = astar_path[0].poly_idx;
@@ -82,7 +90,9 @@ namespace DPathFinder
                 if (!res)
                 {
                     path.Add(astar_path[i-1].p);
-                }
+                    prev_point = astar_path[i - 1].poly_idx;
+					prev_point_pos = astar_path[i - 1].p;
+				}
             }
         }
         private void OnDrawGizmos()
@@ -91,8 +101,13 @@ namespace DPathFinder
             {
                 GameObject go = mesh.gameObject;
                 Gizmos.color = Color.white;
-                Gizmos.DrawWireMesh(mesh.sharedMesh, 0, go.transform.position + Vector3.up, go.transform.rotation, go.transform.lossyScale);
-                Gizmos.color = Color.red;
+                Gizmos.DrawWireMesh(mesh.sharedMesh, 0, go.transform.position, go.transform.rotation, go.transform.lossyScale);
+				Gizmos.color = Color.cyan;
+				for (int i = 0; i < path_o.Count - 1; i++)
+				{
+					Gizmos.DrawLine(path_o[i], path_o[i + 1]);
+				}
+				Gizmos.color = Color.red;
                 for(int i = 0; i < path.Count-1; i++)
 				{
                     Gizmos.DrawLine(path[i], path[i+1]);
