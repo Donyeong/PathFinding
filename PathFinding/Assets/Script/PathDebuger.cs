@@ -68,14 +68,17 @@ namespace DPathFinder
             int prev_point = astar_path[0].poly_idx;
             Vector3 prev_point_pos = astar_path[0].p;
 
+            Debug.Log($"#########Path Find Start==========");
             for (int i = 1; i < astar_path.Count; i++)
             {
-                if(i == astar_path.Count - 1)
+                Debug.Log($"Path Logic {i}==========");
+                if (i == astar_path.Count - 1)
                 {
                     path.Add(astar_path[i].p);
                     continue;
                 }
-                bool res = pf.NavRayCheck(prev_point_pos, astar_path[i].p, prev_point, i);
+                bool res = pf.NavRayCheck(prev_point_pos, astar_path[i].p, prev_point, astar_path[i].poly_idx);
+                Debug.Log($"Path Ray Res {res}");
                 if (!res)
                 {
                     path.Add(astar_path[i-1].p);

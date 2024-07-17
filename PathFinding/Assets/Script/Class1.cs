@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -192,6 +193,7 @@ namespace DPathFinder
                     bool is_hit = IsLineIntersectingTriangle(_start_point, _end_point, v0, v1, v2);
                     if (is_hit)
                     {
+                        Debug.Log($"Ray Test enqueue {link_poly_idx}");
                         queue.Enqueue(link_poly);
                         close_nodes.Add(link_poly_idx);
                     }
