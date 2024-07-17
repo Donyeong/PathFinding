@@ -189,8 +189,13 @@ namespace DPathFinder
                     Vector3 v0 = m_nav_mesh.vertices[vtx_idx_0];
                     Vector3 v1 = m_nav_mesh.vertices[vtx_idx_1];
                     Vector3 v2 = m_nav_mesh.vertices[vtx_idx_2];
+					v0.y = v0.z;
+					v1.y = v1.z;
+					v2.y = v2.z;
+					_start_point.y = _start_point.z;
+					_end_point.y = _end_point.z;
 
-                    bool is_hit = IsLineIntersectingTriangle(_start_point, _end_point, v0, v1, v2);
+					bool is_hit = IsLineIntersectingTriangle(_start_point, _end_point, v0, v1, v2);
                     if (is_hit)
                     {
                         queue.Enqueue(link_poly);
@@ -202,70 +207,60 @@ namespace DPathFinder
             return false;
         }
 
-		private bool DoLineSegmentsIntersect(Vector3 p1, Vector3 p2, Vector3 q1, Vector3 q2)
+		public static bool IsPointInTriangle(Vector2 pt, Vector2 v1, Vector2 v2, Vector2 v3)
 		{
-			// 두 벡터를 계산
-			Vector3 r = p2 - p1;
-			Vector3 s = q2 - q1;
+			Vector2 d1 = v2 - v1;
+			Vector2 d2 = v3 - v2;
+			Vector2 d3 = v1 - v3;
 
-			// 두 벡터의 외적을 계산
-			Vector3 rCrossS = Vector3.Cross(r, s);
-			Vector3 qMinusPCrossR = Vector3.Cross(q1 - p1, r);
+			Vector2 p1 = pt - v1;
+			Vector2 p2 = pt - v2;
+			Vector2 p3 = pt - v3;
 
-			float rCrossSMag = rCrossS.magnitude;
-			float qMinusPCrossRMag = qMinusPCrossR.magnitude;
+			float c1 = Cross(d1, p1);
+			float c2 = Cross(d2, p2);
+			float c3 = Cross(d3, p3);
 
-			// r × s = 0 인 경우, 벡터 r과 s는 평행함
-			if (rCrossSMag == 0)
-			{
-				// q1 - p1과 r가 평행하면 동일선상에 있음
-				if (qMinusPCrossRMag == 0)
-				{
-					// 동일 선상에서 겹치는지 확인
-					float t0 = Vector3.Dot(q1 - p1, r) / Vector3.Dot(r, r);
-					float t1 = t0 + Vector3.Dot(s, r) / Vector3.Dot(r, r);
+			bool hasNeg = (c1 < 0) || (c2 < 0) || (c3 < 0);
+			bool hasPos = (c1 > 0) || (c2 > 0) || (c3 > 0);
 
-					return (t0 >= 0 && t0 <= 1) || (t1 >= 0 && t1 <= 1);
-				}
-
-				// 동일선상에 있지 않음
-				return false;
-			}
-			else
-			{
-				// r × s ≠ 0 인 경우, 교차점이 있는지 확인
-				float t = Vector3.Cross(q1 - p1, s).magnitude / rCrossSMag;
-				float u = Vector3.Cross(q1 - p1, r).magnitude / rCrossSMag;
-
-				return t >= 0 && t <= 1 && u >= 0 && u <= 1;
-			}
+			return !(hasNeg && hasPos);
 		}
-		private bool IsPointInTriangle(Vector3 p, Vector3 v0, Vector3 v1, Vector3 v2)
-        {
-            float sign(Vector3 p1, Vector3 p2, Vector3 p3)
-            {
-                return (p1.x - p3.x) * (p2.z - p3.z) - (p2.x - p3.x) * (p1.z - p3.z);
-            }
 
-            bool b1, b2, b3;
+		public static bool IsLineIntersecting(Vector2 p1, Vector2 p2, Vector2 v1, Vector2 v2)
+		{
+			Vector2 d1 = p2 - p1;
+			Vector2 d2 = v2 - v1;
+			
+			float cross = Cross(d1, d2);
 
-            b1 = sign(p, v0, v1) < 0.0f;
-            b2 = sign(p, v1, v2) < 0.0f;
-            b3 = sign(p, v2, v0) < 0.0f;
+			if (Mathf.Abs(cross) < float.Epsilon)
+				return false;
 
-            return ((b1 == b2) && (b2 == b3));
-        }
-        public bool IsLineIntersectingTriangle(Vector3 p1, Vector3 p2, Vector3 v0, Vector3 v1, Vector3 v2)
-        {
-            if (DoLineSegmentsIntersect(p1, p2, v0, v1)) return true;
-            if (DoLineSegmentsIntersect(p1, p2, v1, v2)) return true;
-            if (DoLineSegmentsIntersect(p1, p2, v2, v0)) return true;
+			Vector2 diff = v1 - p1;
+			float t1 = Cross(diff, d2) / cross;
+			float t2 = Cross(diff, d1) / cross;
 
-            //if (IsPointInTriangle(p1, v0, v1, v2)) return true;
-            //if (IsPointInTriangle(p2, v0, v1, v2)) return true;
+			return t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1;
+		}
 
-            return false;
-        }
+		public static bool IsLineIntersectingTriangle(Vector2 p1, Vector2 p2, Vector2 v1, Vector2 v2, Vector2 v3)
+		{
+			// Check if the line intersects any of the triangle's sides
+			if (IsLineIntersecting(p1, p2, v1, v2) || IsLineIntersecting(p1, p2, v2, v3) || IsLineIntersecting(p1, p2, v3, v1))
+				return true;
 
-    }
+			// Check if any point of the line segment is inside the triangle
+			if (IsPointInTriangle(p1, v1, v2, v3) || IsPointInTriangle(p2, v1, v2, v3))
+				return true;
+
+			return false;
+		}
+
+		public static float Cross(Vector2 a, Vector2 b)
+		{
+			return a.x * b.y - a.y * b.x;
+		}
+
+	}
 }
