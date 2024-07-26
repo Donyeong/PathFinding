@@ -50,8 +50,6 @@ namespace DPathFinder
         public void OnRaycastHit(int _hit_index, Vector3 _hit_point)
         {
             Vector3 worldHitPoint = transform.TransformPoint(_hit_point);
-            Debug.Log("Hit Polygon at: " + _hit_point);
-            Debug.Log("Hit Triangle Index: " + _hit_index);
 
             int prev_curr = current;
             current = _hit_index;
@@ -76,17 +74,14 @@ namespace DPathFinder
             int prev_point = astar_path[0].poly_idx;
             Vector3 prev_point_pos = astar_path[0].p;
 
-            Debug.Log($"#########Path Find Start==========");
             for (int i = 1; i < astar_path.Count; i++)
             {
-                Debug.Log($"Path Logic {i}==========");
                 if (i == astar_path.Count - 1)
                 {
                     path.Add(astar_path[i].p);
                     continue;
                 }
                 bool res = pf.NavRayCheck(prev_point_pos, astar_path[i+1].p, prev_point, astar_path[i+1].poly_idx);
-                Debug.Log($"Path Ray Res {res}");
                 if (!res)
                 {
                     path.Add(astar_path[i].p);
